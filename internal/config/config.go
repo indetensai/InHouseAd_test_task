@@ -7,7 +7,8 @@ import (
 )
 
 type Config struct {
-	Links []string
+	Links         []string
+	ListenAddress string
 }
 
 func ReadConfig() Config {
@@ -16,5 +17,8 @@ func ReadConfig() Config {
 		log.Print("failed to read config file")
 	}
 	data := strings.Split(string(rawData), "\n")
-	return Config{Links: data}
+	return Config{
+		Links:         data,
+		ListenAddress: ":8080",
+	}
 }
