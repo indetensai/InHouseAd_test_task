@@ -23,18 +23,21 @@ func Run() {
 	db := repository.ConnectToDB()
 	repo := repository.NewRepository(db)
 
-	server := controller.NewServer(repo, config, checkService)
-	go func() {
-		if err := server.Body.ListenAndServe(); err != http.ErrServerClosed {
-			log.Fatalf("Server error: %v", err)
-		}
-	}()
+	result := pingService.Ping(config.Links)
+	checkService.UpdateData(result)
 
 	pingTicker := time.Tick(time.Minute)
 	go func() {
 		for ; true; <-pingTicker {
 			result := pingService.Ping(config.Links)
 			checkService.UpdateData(result)
+		}
+	}()
+
+	server := controller.NewServer(repo, config, checkService)
+	go func() {
+		if err := server.Body.ListenAndServe(); err != http.ErrServerClosed {
+			log.Fatalf("Server error: %v", err)
 		}
 	}()
 

@@ -22,10 +22,12 @@ type CheckService interface {
 }
 
 type checkService struct {
-	repo                                            repository.Repository
-	data                                            models.PingResult
-	mu                                              sync.RWMutex
-	SpecificCounter, SlowestCounter, FastestCounter uint64
+	repo            repository.Repository
+	data            models.PingResult
+	mu              sync.RWMutex
+	SpecificCounter uint64
+	SlowestCounter  uint64
+	FastestCounter  uint64
 }
 
 func NewCheckService() CheckService {

@@ -9,7 +9,7 @@ import (
 
 func check_url(url string) models.WebsiteCheck {
 	start := time.Now()
-	client := http.Client{Timeout: time.Minute}
+	client := http.Client{Timeout: time.Second * 30}
 	r, err := client.Get("http://" + url)
 	end := time.Now()
 	return models.WebsiteCheck{

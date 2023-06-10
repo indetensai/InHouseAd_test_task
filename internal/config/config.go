@@ -14,11 +14,12 @@ type Config struct {
 func ReadConfig() Config {
 	rawData, err := os.ReadFile("links.txt")
 	if err != nil {
-		log.Print("failed to read config file")
+		log.Fatal("failed to read config file")
 	}
-	data := strings.Split(string(rawData), "\n")
+	data := strings.ReplaceAll(string(rawData), "\r\n", "\n")
+	links := strings.Split(data, "\n")
 	return Config{
-		Links:         data,
+		Links:         links,
 		ListenAddress: ":8080",
 	}
 }
