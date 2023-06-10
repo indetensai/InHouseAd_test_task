@@ -52,7 +52,11 @@ func (h *responseTimeHandler) SpecificResponseTime(
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	responseTime := h.check_service.SpecificCheck(url)
+	responseTime, err := h.check_service.SpecificCheck(url)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
 	result, err := json.Marshal(map[string]time.Duration{"response time": time.Duration(responseTime.Milliseconds())})
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

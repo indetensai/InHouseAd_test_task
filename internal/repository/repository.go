@@ -32,17 +32,19 @@ func (r *repository) SaveStats(specific, min, max uint64) error {
 }
 
 func (r *repository) GetStats() (result map[string]uint64, err error) {
-	var stats []models.Stats
-	data, err := r.db.Query(`SELECT (endpoint,counter) FROM statistics`)
+	result = make(map[string]uint64)
+	rows, err := r.db.Query(`SELECT * FROM statistics`)
 	if err != nil {
 		return
 	}
-	err = data.Scan(&stats)
-	if err != nil {
-		return
-	}
-	for _, content := range stats {
-		result[content.Endpoint] = content.Counter
+	defer rows.Close()
+	for rows.Next() {
+		var temp models.Stats
+		err = rows.Scan(&temp.Endpoint, &temp.Counter)
+		if err != nil {
+			return
+		}
+		result[temp.Endpoint] = temp.Counter
 	}
 	return
 }

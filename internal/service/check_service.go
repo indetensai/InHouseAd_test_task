@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"task/internal/models"
@@ -9,7 +10,7 @@ import (
 )
 
 type CheckService interface {
-	SpecificCheck(link string) time.Duration
+	SpecificCheck(link string) (time.Duration, error)
 	MinResponseTime() string
 	MaxResponseTime() string
 	UpdateData(models.PingResult)
@@ -37,10 +38,13 @@ func (c *checkService) UpdateData(input models.PingResult) {
 	c.data = input
 }
 
-func (c *checkService) SpecificCheck(link string) time.Duration {
+func (c *checkService) SpecificCheck(link string) (time.Duration, error) {
 	c.mu.RLock()
 	defer c.mu.RUnlock()
-	return c.data.Data[link].ResponseTime
+	if _, ok := c.data.Data[link]; !ok {
+		return 0, fmt.Errorf("link is not in map")
+	}
+	return c.data.Data[link].ResponseTime, nil
 }
 
 func (c *checkService) MinResponseTime() string {
